@@ -8,6 +8,7 @@ import com.example.ordersystem.entity.OrderStatus;
 import com.example.ordersystem.repository.CustomerRepository;
 import com.example.ordersystem.repository.OrderRepository;
 import com.example.ordersystem.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public OrderResponse createOrder(@RequestBody OrderRequest orderRequest) {
+    public OrderResponse createOrder(@Valid @RequestBody OrderRequest orderRequest) {
         return orderService.createOrder(orderRequest);
     }
 

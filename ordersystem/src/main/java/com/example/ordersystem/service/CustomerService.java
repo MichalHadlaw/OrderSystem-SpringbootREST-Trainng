@@ -3,8 +3,9 @@ package com.example.ordersystem.service;
 import com.example.ordersystem.dto.CustomerRequest;
 import com.example.ordersystem.dto.CustomerResponse;
 import com.example.ordersystem.entity.Customer;
+import com.example.ordersystem.exceptions.CustomerNotFoundException;
+import com.example.ordersystem.mapper.CustomerMapper;
 import com.example.ordersystem.repository.CustomerRepository;
-import com.example.ordersystem.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,63 +15,45 @@ import java.util.stream.Collectors;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final CustomerMapper customerMapper;
 
-
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(CustomerRepository customerRepository, CustomerMapper customerMapper) {
         this.customerRepository = customerRepository;
+        this.customerMapper = customerMapper;
     }
 
-    public CustomerResponse createCustomer(CustomerRequest request){
-        Customer customer = new Customer();
-        customer.setFirstName(request.getFirstName());
-        customer.setLastName(request.getLastName());
-        customer.setEmail(request.getEmail());
-
+    public CustomerResponse createCustomer(CustomerRequest request) {
+        Customer customer = customerMapper.mapToEntity(request);
         Customer saved = customerRepository.save(customer);
-        return mapToResponse(saved);
+        return customerMapper.mapToResponse(saved);
     }
 
-public CustomerResponse getCustomerById(Long id){
+    public CustomerResponse getCustomerById(Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("customere not found"));
+                .orElseThrow(() -> new CustomerNotFoundException(id));
+        return customerMapper.mapToResponse(customer);
+    }
 
-        return mapToResponse(customer);
-}
-
-public List<CustomerResponse> getAllCustomers(){
+    public List<CustomerResponse> getAllCustomers() {
         List<Customer> customers = customerRepository.findAll();
         return customers.stream()
-                .map(this::mapToResponse)
+                .map(customerMapper::mapToResponse)
                 .collect(Collectors.toList());
-}
-
+    }
 
     public CustomerResponse updateCustomer(Long id, CustomerRequest request) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new CustomerNotFoundException(id));
 
-        customer.setFirstName(request.getFirstName());
-        customer.setLastName(request.getLastName());
-        customer.setEmail(request.getEmail());
+        customerMapper.updateEntity(customer, request);
 
         Customer updated = customerRepository.save(customer);
-
-        return mapToResponse(updated);
+        return customerMapper.mapToResponse(updated);
     }
-
 
     public void deleteCustomer(Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
-
+                .orElseThrow(() -> new CustomerNotFoundException(id));
         customerRepository.delete(customer);
-    }
-    private CustomerResponse mapToResponse(Customer customer) {
-        CustomerResponse response = new CustomerResponse();
-        response.setId(customer.getId());
-        response.setFirstName(customer.getFirstName());
-        response.setLastName(customer.getLastName());
-        response.setEmail(customer.getEmail());
-        return response;
     }
 }

@@ -5,6 +5,7 @@ import com.example.ordersystem.dto.CustomerResponse;
 import com.example.ordersystem.entity.Customer;
 import com.example.ordersystem.repository.CustomerRepository;
 import com.example.ordersystem.service.CustomerService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class CustomerController {
     public CustomerController(CustomerService customerService){this.customerService = customerService;}
 
     @PostMapping
-    public CustomerResponse crearteCustomer(@RequestBody CustomerRequest customerRequest){
+    public CustomerResponse crearteCustomer(@Valid @RequestBody CustomerRequest customerRequest){
         return customerService.createCustomer(customerRequest);
     }
 
