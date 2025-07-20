@@ -27,6 +27,10 @@ public class OrderController {
     public OrderResponse createOrder(@Valid @RequestBody OrderRequest orderRequest) {
         return orderService.createOrder(orderRequest);
     }
+    @GetMapping
+    public List<OrderResponse> getAllOrders() {
+        return orderService.getAllOrders();
+    }
 
     @GetMapping("/{id}")
     public OrderResponse getOrderById(@PathVariable Long id) {

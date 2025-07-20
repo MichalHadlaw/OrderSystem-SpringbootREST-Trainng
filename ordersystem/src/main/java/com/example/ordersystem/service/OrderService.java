@@ -12,6 +12,8 @@ import com.example.ordersystem.repository.CustomerRepository;
 import com.example.ordersystem.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
@@ -33,6 +35,12 @@ public class OrderService {
         order.setStatus(OrderStatus.valueOf(orderRequest.getStatus()));
 
         return orderMapper.toDto(orderRepository.save(order));
+    }
+    public List<OrderResponse> getAllOrders() {
+        return orderRepository.findAll()
+                .stream()
+                .map(orderMapper::toDto)
+                .toList();
     }
 
     public OrderResponse getOrderById(Long id) {

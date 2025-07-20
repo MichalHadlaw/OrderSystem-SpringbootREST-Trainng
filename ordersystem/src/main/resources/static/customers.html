@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customers</title>
+</head>
+<body>
+<h1>Customers List</h1>
+<table border="1" id="customersTable">
+    <thead>
+    <tr><th>ID</th><th>First Name</th><th>Last Name</th><th>Email</th></tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<h2>Add Customer</h2>
+<form id="customerForm">
+    <input type="text" id="firstName" placeholder="First Name" required />
+    <input type="text" id="lastName" placeholder="Last Name" required />
+    <input type="email" id="email" placeholder="Email" required />
+    <button type="submit">Add</button>
+</form>
+
+<script>
+    async function fetchCustomers() {
+      const response = await fetch('/customers');
+      const customers = await response.json();
+      const tbody = document.querySelector('#customersTable tbody');
+      tbody.innerHTML = '';
+      customers.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${c.id}</td><td>${c.firstName}</td><td>${c.lastName}</td><td>${c.email}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('customerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const customer = {
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        email: document.getElementById('email').value
+      };
+      await fetch('/customers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(customer)
+      });
+      e.target.reset();
+      fetchCustomers();
+    });
+
+    fetchCustomers();
+</script>
+</body>
+</html>

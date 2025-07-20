@@ -1,7 +1,7 @@
 package com.example.ordersystem.entity;
 
 public enum OrderStatus {
-    REATED,
+    CREATED,
     PAID,
     SHIPPED,
     CANCELLED
